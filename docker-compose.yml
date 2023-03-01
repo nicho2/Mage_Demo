@@ -1,0 +1,50 @@
+version: '3.6'
+services:
+  machines:
+    build:
+      context: .
+      dockerfile: machine_simulator/dockerfile
+    environment:
+      - MACHINES=2
+      - BROKER=mosquitto
+    networks:
+      - factory
+    depends_on:
+      - "mosquitto"
+  telegraf:
+    image: telegraf:latest
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - INFLUX_HOST=${INFLUX_HOST}
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_ORG=${INFLUX_ORG}
+      - INFLUX_BUCKET=${INFLUX_BUCKET}
+    networks:
+      - factory
+    depends_on:
+      - "mosquitto"
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - 1883:1883
+    networks:
+      - factory
+    volumes: 
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  # task engine:
+  downsample:
+    build:
+      context: ./task-engine/downsample
+      dockerfile: ./Dockerfile
+    environment:
+      - INFLUX_HOST=${INFLUX_HOST}
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_ORG=${INFLUX_ORG}
+      - INFLUX_BUCKET=${INFLUX_BUCKET}
+      - INTERVAL=300
+    restart: always
+networks: 
+  factory:
+    name: factory
+
