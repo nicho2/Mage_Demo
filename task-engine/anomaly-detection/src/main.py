@@ -29,7 +29,7 @@ influxdb_write_api = influxdb_client.write_api(write_options=SYNCHRONOUS, batch_
 
 while True:
    
-   query = client.execute("SELECT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')")
+   query = client.execute("SELECT DISTINCT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')")
       # Create reader to consume result
    reader = client.do_get(query.endpoints[0].ticket)
 
@@ -64,7 +64,7 @@ while True:
       print("Writing data to InfluxDB...", flush=True)
       influxdb_write_api.write(bucket=bucket, record=df, data_frame_measurement_name='machine_data_aggregated', data_frame_tag_columns=['machineID'])
       print(f"Sleeping for {interval} ", flush=True)
-      
+
    sleep(int(interval))
 
 
