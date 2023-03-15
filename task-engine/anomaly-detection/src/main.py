@@ -23,7 +23,7 @@ client = FlightSQLClient(host=host,
 influxdb_client = InfluxDBClient(url=("https://"+str(host)), token= token, org=org)
 influxdb_write_api = influxdb_client.write_api(write_options=SYNCHRONOUS, batch_size=20, flush_interval=20, max_retries=0)
 
-query = "SELECT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')"
+query = client.execute("SELECT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')")
 # Create reader to consume result
 reader = client.do_get(query.endpoints[0].ticket)
 
