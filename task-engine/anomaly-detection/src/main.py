@@ -23,20 +23,21 @@ client = FlightSQLClient(host=host,
 influxdb_client = InfluxDBClient(url=("https://"+str(host)), token= token, org=org)
 influxdb_write_api = influxdb_client.write_api(write_options=SYNCHRONOUS, batch_size=20, flush_interval=20, max_retries=0)
 
-query = client.execute("SELECT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')")
-# Create reader to consume result
-reader = client.do_get(query.endpoints[0].ticket)
 
-# Read all data into a pyarrow.Table
-Table = reader.read_all()
-print(Table)
-
-d = Table.to_pydict()
-machines = d['machineID']
 
 
 
 while True:
+   
+   query = client.execute("SELECT \"machineID\" FROM iox.machine_data WHERE time > (NOW() - INTERVAL '15 MINUTE')")
+      # Create reader to consume result
+   reader = client.do_get(query.endpoints[0].ticket)
+
+      # Read all data into a pyarrow.Table
+   Table = reader.read_all()
+   print(Table)
+   d = Table.to_pydict()
+   machines = d['machineID']
 
    for machine in machines:
       query = client.execute(f"SELECT \"machineID\", vibration, time FROM iox.machine_data WHERE time > (NOW() - INTERVAL '5 MINUTE') AND \"machineID\" = '{machine}'")
@@ -63,7 +64,8 @@ while True:
       print("Writing data to InfluxDB...", flush=True)
       influxdb_write_api.write(bucket=bucket, record=df, data_frame_measurement_name='machine_data_aggregated', data_frame_tag_columns=['machineID'])
       print(f"Sleeping for {interval} ", flush=True)
-      sleep(int(interval))
+      
+   sleep(int(interval))
 
 
         
