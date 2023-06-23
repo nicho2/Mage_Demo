@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.8'
 services:
   machines:
     build:
@@ -7,6 +7,8 @@ services:
     environment:
       - MACHINES=2
       - BROKER=mosquitto
+    ports:
+      - 5005:5005
     networks:
       - factory
     depends_on:
@@ -32,33 +34,16 @@ services:
       - factory
     volumes: 
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  # task engine:
-  anomaly-detection:
-    build:
-      context: ./task-engine/anomaly-detection
-      dockerfile: ./Dockerfile
-    environment:
-      - INFLUX_HOST=${INFLUX_HOST}
-      - INFLUX_TOKEN=${INFLUX_TOKEN}
-      - INFLUX_ORG=${INFLUX_ORG}
-      - INFLUX_BUCKET=${INFLUX_BUCKET}
-      - INTERVAL=300
-    restart: always
-    networks:
-      - factory
   grafana:
     image: grafana/grafana:latest
     ports:
       - 3000:3000
     environment:
-      - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
-      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=influxdata-flightsql-datasource
       - INFLUX_HOST=${INFLUX_HOST}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=${INFLUX_ORG}
       - INFLUX_BUCKET=${INFLUX_BUCKET}
     volumes: 
-      - ./grafana/plugins/influxdata-flightsql-datasource:/var/lib/grafana/plugins/influxdata-flightsql-datasource
       - ./grafana/datasources:/etc/grafana/provisioning/datasources
       - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:

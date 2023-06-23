@@ -31,4 +31,4 @@ class mqtt_publisher:
         topic = topic +"/"+ str(data["metadata"]["machineID"])
         message = json.dumps(data)
         self.client.publish(topic, message)
-        print("succcesfully delivered message to MQTT topic")
+        #print("succcesfully delivered message to MQTT topic")

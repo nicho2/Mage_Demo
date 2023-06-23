@@ -28,6 +28,12 @@ class machine():
         self.vibration = 0
         self.barcode= fake.ean(length=8)
         self.provider=fake.company()
+        self.fault = False
+        self.previous_fault_state = False
+
+    def toggle_fault(self):
+        self.previous_fault_state = self.fault
+        self.fault = not self.fault
 
     def returnMachineID(self):
         return self.machine_id
@@ -35,7 +41,8 @@ class machine():
    
     def returnTemperature(self):
         currentLoad = self.load
-        if currentLoad > 100: self.temperature = randint(80, 90)
+        if currentLoad >= 190: self.temperature = randint(95, 120)
+        elif currentLoad > 110: self.temperature = randint(80, 90)
         elif currentLoad >= 40: self.temperature = randint(35, 40)
         elif currentLoad > 0: self.temperature = randint(29, 34)
         else: self.temperature = 20
@@ -48,7 +55,8 @@ class machine():
 
     def returnPower(self):
         currentLoad = self.load
-        if currentLoad > 100: self.power = randint(300, 320)
+        if currentLoad >= 190: self.power = randint(400, 500)
+        elif currentLoad > 110: self.power = randint(300, 320)
         elif currentLoad >= 40: self.power = randint(200, 220)
         elif currentLoad == 0: self.power = 0
         else: self.power = randint(180, 199)
@@ -58,7 +66,8 @@ class machine():
         
     def returnVibration(self):
         currentLoad = self.load
-        if currentLoad > 100: self.vibration = randint(300, 500)
+        if currentLoad >= 190: self.vibration = randint(500, 600)
+        elif currentLoad > 110: self.vibration = randint(300, 500)
         elif currentLoad == 0: self.vibration  = 0
         elif currentLoad >= 40: self.vibration = randint(80, 90)
         else: self.vibration = randint(50, 79)
@@ -76,35 +85,53 @@ class machine():
 
 
 
-def runMachine(mqtthost, fault):
+def runMachine(m):
+    BROKER = os.getenv('BROKER', "localhost")
     counter = 0
     counter2 = 0
-    m = machine()
 
-    mqttProducer = mqtt_publisher(address=mqtthost, port=1883, clientID=m.returnMachineID())
+
+    mqttProducer = mqtt_publisher(address=BROKER, port=1883, clientID=m.returnMachineID())
     mqttProducer.connect_client()
     sleeptime = 1
-    m.setLoad(50)
+    m.setLoad(randint(10, 50))
+    increasing = True
     
-    while (True):
+    
+    while True:
+        # Check if fault state has changed from True to False
+        if m.previous_fault_state and not m.fault:
+            m.setLoad(50)
+            m.previous_fault_state = False
+
         # Chance of fault
-        if fault == True:
-            if counter == 60:
-                fault_chance = randint(0, 10)
-                if fault_chance >= 5:
-                    m.setLoad(120)
-                else:
-                    m.setLoad(randint(0, 75))
-                counter = 0
+        if m.fault:
+            if counter2 == 5:
+                current_load = m.load
+                if current_load < 200:
+                    new_load = min(current_load + 20, 200)
+                    m.setLoad(new_load)
+                counter2 = 0
         else:
-            if counter2 == 60:
-                m.setLoad(randint(0, 75))
+            if counter2 == 5:
+                # Gradually change load between 50 and 99
+                current_load = m.load
+                if increasing:
+                    new_load = current_load + 5
+                    if new_load >= 99:
+                        increasing = False
+                else:
+                    new_load = current_load - 5
+                    if new_load <= 50:
+                        increasing = True
+                
+                m.setLoad(new_load)
                 counter2 = 0
            
 
         # Publish messages
         check_machine = m.returnMachineHealth()
-        print(check_machine,flush=True)
+        #print(check_machine,flush=True)
         mqttProducer.publish_to_topic(topic="machine", data=check_machine)
         
         sleep(sleeptime)
@@ -113,23 +140,4 @@ def runMachine(mqtthost, fault):
 
 
 
-    
 
-
-if __name__ == "__main__":
-    GENERATORS = os.getenv('MACHINES', 1)
-    BROKER = os.getenv('BROKER', "localhost")
-
-
-    i =0
-    while (i < int(GENERATORS)):
-        fault = False
-        generator = threading.Thread(target=runMachine, args=[BROKER, fault], daemon=True)
-        generator.start()
-        i = i +1
-
-    fault = True
-    generator = threading.Thread(target=runMachine, args=[BROKER, fault], daemon=True)
-    generator.start()
-            
-    Event().wait()
