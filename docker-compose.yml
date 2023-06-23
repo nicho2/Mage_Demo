@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3'
 services:
   machines:
     build:
@@ -51,5 +51,5 @@ services:
     
 networks: 
   factory:
-    name: factory
+
 
