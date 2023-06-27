@@ -550,7 +550,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "title": "Raw Vibration (Mean)",
+      "title": "Power Consumption",
       "type": "histogram"
     }
   ],
