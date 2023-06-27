@@ -18,6 +18,17 @@ datasources:
       token: ${INFLUX_TOKEN}
     readOnly: false
 
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    url: https://${INFLUX_HOST}
+    user: user
+    jsonData:
+      dbName: ${INFLUX_BUCKET}
+      httpMode: POST
+    secureJsonData:
+      password: ${INFLUX_TOKEN}
+
 
 
 

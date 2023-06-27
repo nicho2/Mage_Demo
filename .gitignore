@@ -1,3 +1,4 @@
 /.venv
 grafana/plugins
 .env
+.env-old
