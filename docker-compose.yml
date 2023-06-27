@@ -21,7 +21,7 @@ services:
       - INFLUX_HOST=${INFLUX_HOST}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=${INFLUX_ORG}
-      - INFLUX_BUCKET=${INFLUX_BUCKET}
+      - INFLUX_DATABASE=${INFLUX_DATABASE}
     networks:
       - factory
     depends_on:
@@ -42,7 +42,7 @@ services:
       - INFLUX_HOST=${INFLUX_HOST}
       - INFLUX_TOKEN=${INFLUX_TOKEN}
       - INFLUX_ORG=${INFLUX_ORG}
-      - INFLUX_BUCKET=${INFLUX_BUCKET}
+      - INFLUX_DATABASE=${INFLUX_DATABASE}
       - GF_INSTALL_PLUGINS=influxdata-flightsql-datasource
     volumes: 
       - ./grafana/datasources:/etc/grafana/provisioning/datasources

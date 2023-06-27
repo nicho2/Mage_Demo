@@ -13,7 +13,7 @@ datasources:
     jsonData:
       host: ${INFLUX_HOST}:443
       metadata:
-      - bucket-name: ${INFLUX_BUCKET}
+      - bucket-name: ${INFLUX_DATABASE}
       secure: true
       token: ${INFLUX_TOKEN}
     readOnly: false
@@ -24,7 +24,7 @@ datasources:
     url: https://${INFLUX_HOST}
     user: user
     jsonData:
-      dbName: ${INFLUX_BUCKET}
+      dbName: ${INFLUX_DATABASE}
       httpMode: POST
     secureJsonData:
       password: ${INFLUX_TOKEN}
