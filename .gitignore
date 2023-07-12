@@ -1,4 +1,5 @@
 /.venv
 grafana/plugins
 .env
-.env-old
+.env-dedicated
+.env-serverless
