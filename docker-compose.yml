@@ -34,22 +34,6 @@ services:
       - factory
     volumes: 
       - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - 3000:3000
-    environment:
-      - INFLUX_HOST=${INFLUX_HOST}
-      - INFLUX_TOKEN=${INFLUX_TOKEN}
-      - INFLUX_ORG=${INFLUX_ORG}
-      - INFLUX_DATABASE=${INFLUX_DATABASE}
-      - GF_INSTALL_PLUGINS=influxdata-flightsql-datasource
-    volumes: 
-      - ./grafana/datasources:/etc/grafana/provisioning/datasources
-      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
-    networks:
-      - factory
-    
 networks: 
   factory:
 

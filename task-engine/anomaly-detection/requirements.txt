@@ -1,4 +1,0 @@
-influxdb-client
-flightsql-dbapi
-pandas
-adtk

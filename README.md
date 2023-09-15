@@ -1,19 +1,18 @@
-# Arrow Task Engine
+# Mage Demo
 
-This example tutorial shows you how to build a simple task engine using Arrow, docker and an analytics library called ["Anomaly Detection Tool Kit"](https://adtk.readthedocs.io/en/stable/).
+This example tutorial shows you how to build an anomaly detection and forecasting pipeline with Mage and InfluxDB
 
-## Architecture
-!["architecture"](img/architecture.png)
+## Generated Data 
+This demo generates machine data (load, vibration, power, and temperature) for three machines (machine1, machine2, and machine3). To create anomalies, navigate to `localhost:5005` and click on a machine to toggle the anomaly creation. 
 
 ## Setup
 Please make sure you have the following prerequisites before you begin:
 - [Docker](https://docs.docker.com/get-docker/)
 - [InfluxDB IOx](https://github.com/InfluxCommunity/InfluxDB-IOx-Quick-Starts#influxdb-iox)
 - [Env file](https://github.com/InfluxCommunity/InfluxDB-IOx-Quick-Starts#env-file)
-- [Grafana flighsql plugin](https://github.com/InfluxCommunity/InfluxDB-IOx-Quick-Starts#grafana-flighsql-plugin)
 
-### InfluxDB IOx
-To get started, you will need to create an InfluxDB IOx account. If you don't already have an account, you can sign up for free [here](https://cloud2.influxdata.com/signup). Once you have an account, you can create a new organization and bucket to store your data. You can find instructions on how to do this [here](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/create-bucket/).
+### InfluxCloud v3
+To get started, you will need to create an InfluxDB IOx account. If you don't already have an account, you can sign up for free [here](https://cloud2.influxdata.com/signup). Once you have an account, you can create a new organization and bucket to store your data. You can find instructions on how to do this [here](https://docs.influxdata.com/influxdb/cloud/organizations/buckets/create-bucket/). Name your bucket `factory`.
 
 ### Env file
 To connect Grafana to InfluxDB IOx, you will need to create an env file. With the top directory create a file called `.env`:
@@ -43,4 +42,4 @@ Navigate to the quick start you would like to run and run the following command:
 ```bash
 docker-compose up -d
 ```
-This will start Grafana server and Telegraf. Once the quick start is running, you can access Grafana at `localhost:3000`. You can log in with the default username and password: `admin` and `admin`.
+
