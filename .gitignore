@@ -1,6 +1,6 @@
 /.venv
 grafana/plugins
-.env
+*.env*
 .aws
 .env-dedicated
 .env-serverless
