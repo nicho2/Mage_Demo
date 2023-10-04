@@ -1,0 +1,56 @@
+version: '3'
+services:
+  magic:
+    image: mageai/mageai:latest
+    command: mage start ${MAGE_PROJECT_NAME}
+    build:
+      context: ./influx-magic
+    env_file:
+      - .env
+    environment:
+      USER_CODE_PATH: /home/src/${MAGE_PROJECT_NAME}
+      ENV: ${MAGE_ENV}
+    ports:
+      - 6789:6789
+    volumes:
+      - .:/home/src/
+      - ~/.aws:/home/src/.aws
+    restart: on-failure:5
+  machines:
+    build:
+      context: .
+      dockerfile: machine_simulator/dockerfile
+    environment:
+      - MACHINES=2
+      - BROKER=mosquitto
+    ports:
+      - 5005:5005
+    networks:
+      - factory
+    depends_on:
+      - "mosquitto"
+  telegraf:
+    image: telegraf:latest
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    environment:
+      - INFLUX_HOST=${INFLUX_HOST}
+      - INFLUX_TOKEN=${INFLUX_TOKEN}
+      - INFLUX_ORG=${INFLUX_ORG}
+      - INFLUX_DATABASE=${INFLUX_DATABASE}
+    networks:
+      - factory
+    depends_on:
+      - "mosquitto"
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - 1883:1883
+    networks:
+      - factory
+    volumes: 
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+networks: 
+  factory:
+
+
