@@ -1,5 +1,21 @@
 version: '3'
 services:
+  magic:
+    image: mageai/mageai:latest
+    command: mage start ${MAGE_PROJECT_NAME}
+    build:
+      context: ./influx-magic
+    env_file:
+      - .env
+    environment:
+      USER_CODE_PATH: /home/src/${MAGE_PROJECT_NAME}
+      ENV: ${MAGE_ENV}
+    ports:
+      - 6789:6789
+    volumes:
+      - .:/home/src/
+      - ~/.aws:/home/src/.aws
+    restart: on-failure:5
   machines:
     build:
       context: .
